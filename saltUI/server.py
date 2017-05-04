@@ -34,7 +34,7 @@
  *
 '''
 
-from bottle import route, view, run, request, response, template
+from bottle import route, view, run, request, response, template, static_file
 from data_parser import *
 from collections import OrderedDict
 import cPickle as pickle
@@ -137,6 +137,7 @@ def contact():
 @view('admin')
 def admin():
     return template('admin',flags=None)
+
 
 @route('/update_malware')
 @view('admin')
@@ -1004,6 +1005,11 @@ def windows():
     results.sort()
     results.reverse()
     return template('windows',results=results)
+
+
+@route('/<filename:re:.*\.svg>')
+def serve_pictures(filename):
+    return static_file(filename, root='./')
 
 run(host='localhost', port=8080, debug=True)
 #run(host='192.168.0.96', port=80, debug=True)
