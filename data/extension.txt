@@ -1,0 +1,37 @@
+0000	server_name
+0001	max_fragment_length
+0002	client_certificate_url
+0003	trusted_ca_keys
+0004	truncated_hmac
+0005	status_request
+0006	user_mapping
+0007	client_authz
+0008	server_authz
+0009	cert_type
+000A	supported_groups (renamed from "elliptic_curves")
+000B	ec_point_formats
+000C	srp
+000D	signature_algorithms
+000E	use_srtp
+000F	heartbeat
+0010	application_layer_protocol_negotiation
+0011	status_request_v2
+0012	signed_certificate_timestamp
+0013	client_certificate_type
+0014	server_certificate_type
+0015	padding
+0016	encrypt_then_mac
+0017	extended_master_secret
+0018	token_binding (TEMPORARY - registered 2016-02-04, extension registered 2017-01-12, expires 2018-02-04)
+0019	cached_info
+001A	Unassigned
+001B	Unassigned
+001C	Unassigned
+001D	Unassigned
+001E	Unassigned
+001F	Unassigned
+0020	Unassigned
+0021	Unassigned
+0022	Unassigned
+0023	SessionTicket TLS
+FF01	renegotiation_info
