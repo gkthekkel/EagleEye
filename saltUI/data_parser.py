@@ -39,6 +39,35 @@ import math
 import json
 import gzip
 
+# read in ciphersutie information
+fp = open('ciphersuites.txt','r')
+ciphers = {}
+for line in fp:
+    tok = line.split()
+    ciphers[tok[0]] = (tok[1],tok[2])
+fp.close()
+
+
+
+# read in protocol information
+fp = open('../data/ip.txt','r')
+global protocols
+protocols = {}
+for line in fp:
+    tok = line.split()
+    protocols[tok[0]] = (tok[1])
+fp.close()
+
+fp = open('../data/extension.txt','r')
+global extensions
+extensions = {}
+for line in fp:
+    tok = line.split()
+    extensions[tok[0]] = (tok[1])
+fp.close()
+print "Protocol:"
+print extensions
+
 # 176
 cs = {u'c005': 0, u'c004': 1, u'c007': 2, u'0039': 3, u'0038': 4, u'c003': 5, u'c002': 6, u'0035': 7, u'0034': 8, u'0037': 9, u'0036': 10, u'c009': 11, u'c008': 12, u'0033': 13, u'0032': 14, u'c07a': 15, u'c07b': 16, u'c07c': 17, u'c07d': 18, u'0065': 19, u'c087': 21, u'c086': 22, u'c081': 23, u'c080': 24, u'c072': 25, u'c073': 26, u'c076': 27, u'c077': 28, u'0040': 29, u'0041': 30, u'0042': 31, u'feff': 32, u'0044': 33, u'0045': 34, u'0046': 35, u'0030': 36, u'c00e': 37, u'c00d': 38, u'c00f': 39, u'c00a': 40, u'c00c': 41, u'003e': 42, u'003d': 43, u'003f': 44, u'003a': 45, u'003c': 46, u'003b': 47, u'006a': 109, u'00ff': 49, u'00fd': 50, u'00fb': 51, u'00fc': 52, u'c08a': 53, u'c08b': 54, u'5600': 55, u'c05d': 56, u'c05c': 57, u'00af': 58, u'00ae': 59, u'0017': 113, u'00a7': 60, u'00a6': 61, u'00a5': 62, u'00a4': 63, u'00a3': 64, u'00a2': 65, u'00a1': 66, u'00a0': 67, u'cc13': 68, u'cc15': 69, u'cc14': 70, u'c049': 71, u'c048': 20, u'0016': 114, u'000d': 74, u'000f': 75, u'000a': 76, u'000c': 77, u'0064': 81, u'0066': 79, u'0067': 80, u'00b0': 78, u'00b1': 82, u'0062': 83, u'0063': 84, u'0060': 85, u'0061': 86, u'0068': 87, u'0069': 88, u'0004': 89, u'0005': 90, u'0006': 91, u'0007': 92, u'0001': 93, u'0002': 94, u'0003': 95, u'0008': 96, u'0009': 97, u'0031': 98, u'0019': 125, u'0018': 126, u'c030': 101, u'c031': 102, u'c032': 103, u'006d': 104, u'00ba': 105, u'006b': 106, u'006c': 107, u'00bd': 108, u'00be': 48, u'00c4': 110, u'00c0': 111, u'00c3': 112, u'cca9': 72, u'cca8': 73, u'0015': 115, u'0014': 116, u'0013': 117, u'0012': 118, u'0011': 119, u'0010': 120, u'c01b': 121, u'c01c': 122, u'c01a': 123, u'c01f': 124, u'c01d': 99, u'c01e': 100, u'002c': 127, u'002f': 128, u'c029': 129, u'c028': 130, u'c027': 131, u'c026': 132, u'c025': 133, u'c024': 134, u'c023': 135, u'c022': 136, u'c021': 137, u'c020': 138, u'009f': 139, u'009e': 140, u'009d': 141, u'009c': 142, u'009b': 143, u'009a': 144, u'0088': 145, u'0089': 146, u'0084': 147, u'0085': 148, u'0086': 149, u'0087': 150, u'0043': 151, u'c02f': 152, u'c02e': 153, u'c02d': 154, u'c02c': 155, u'c02b': 156, u'c02a': 157, u'c018': 158, u'c019': 159, u'001b': 160, u'001a': 161, u'c012': 162, u'c013': 163, u'c011': 164, u'c016': 165, u'c017': 166, u'c014': 167, u'008d': 168, u'008a': 169, u'008b': 170, u'008c': 171, u'0099': 172, u'0098': 173, u'0097': 174, u'0096': 175}
 
@@ -436,14 +465,20 @@ class DataParser:
         return data
 
     def getIndividualFlowMetadata(self):
-        print "George flow[tls][SNI]"
-        # print flow['tls']['SNI']
         if self.legacy_format == False:
             if self.flows == []:
                 return None, None
 
             data = []
             metadata = []
+            tls_version = {
+                5 : 'TLS 1.2',
+                4 : 'TLS 1.1',
+                3 : 'TLS 1.0',
+                2 : 'TLS 3.0',
+                1 : 'TLS 2.0'
+            }
+
             for flow in self.flows:
                 if len(flow['packets']) == 0:
                     continue
@@ -459,18 +494,97 @@ class DataParser:
                 key = flow['sa'].replace('.','')+flow['da'].replace('.','')+str(int(flow['sp']))+str(int(flow['dp']))+str(tmp_b)
                 key = str(key)
                 bd = None
+                dns = None
+                SNI = None
+                o_probable_os = None
+                i_probable_os = None
+                tls_iv = None
+                tls_ov = None
+                tls_osid = None
+                tls_isid = None
+                scs = None
+                cs = None
+                pr = None
+                OfferedCS= None
+
+                if 'o_probable_os' in flow:
+                    o_probable_os = flow['o_probable_os']
+
+                if 'i_probable_os' in flow:
+                    i_probable_os = flow['i_probable_os']
+
                 if 'bd' in flow:
                     bd = flow['bd']
 
-                print "Test1:"
+                if 'pr' in flow:
+                    pr = flow['pr']
+
+                if 'dns' in flow and 'rn' in flow['dns'][0]:
+                    dns = flow['dns'][0]['rn']
+
+                if 'tls' in flow and 'SNI' in flow['tls']:
+                    SNI = flow['tls']['SNI'][0]
+
+                if 'tls' in flow and 'tls_iv' in flow['tls']:
+                    tls_iv = tls_version[flow['tls']['tls_iv']]
+
+                if 'tls' in flow and 'tls_ov' in flow['tls']:
+                    tls_ov = tls_version[flow['tls']['tls_ov']]
+
+                if 'tls' in flow and 'tls_osid' in flow['tls']:
+                    tls_osid = flow['tls']['tls_osid']
+
+                if 'tls' in flow and 'tls_isid' in flow['tls']:
+                    tls_isid = flow['tls']['tls_isid']
 
 
-                if (flow['dp'] == 443) & ('tls' in flow):
-                    #print "Arun"
-                    print flow['tls']
-                    self.advancedInfo[key] = (flow['sa'],flow['da'],flow['sp'],flow['dp'],flow['packets'],bd,flow['tls'])
-                else:
-                    self.advancedInfo[key] = (flow['sa'],flow['da'],flow['sp'],flow['dp'],flow['packets'],bd,'{}')
+
+                if 'tls' in flow and 'scs' in flow['tls']:
+                    try:
+                        (cipher_name, tmp_level) = ciphers[str(flow['tls']['scs'])]
+                        scs = cipher_name
+                    except:
+                        print "Missing cipher name for scs: " + str(scs)
+
+
+                if 'tls' in flow and 'cs' in flow['tls']:
+                    OfferedCS = []
+                    cs = flow['tls']['cs']
+                    for c in cs:
+                        try:
+                            (cipher_name, tmp_level) = ciphers[str(c)]
+                        except:
+                            print "Missing cipher name for in cs: " + str(cs)
+                        OfferedCS.append(cipher_name)
+
+
+                """
+                print "SNI"
+                print SNI
+                print "o_probable_os"
+                print o_probable_os
+                print "i_probable_os"
+                print i_probable_os
+                print "tls_iv"
+                print tls_iv
+                print "tls_ov"
+                print tls_ov
+                print "tls_osid"
+                print tls_osid
+                print "tls_isid"
+                print tls_isid
+                print "scs"
+                print scs
+                print "cs"
+                print cs
+                print "pr"
+                print pr
+                print "OfferedCS"
+                print OfferedCS"""
+
+
+
+                self.advancedInfo[key] = (flow['sa'],flow['da'],flow['sp'],flow['dp'],flow['packets'],bd,SNI,dns,o_probable_os,i_probable_os,tls_iv,tls_ov,tls_osid,tls_isid,scs,cs,pr,OfferedCS)
                 self.all_flows[key] = flow
                 tmp_m.append(flow['sa']) # source port
                 tmp_m.append(flow['da']) # destination port
@@ -511,13 +625,16 @@ class DataParser:
                         time += packet['ipt']
                     tmp.append(time)
                 if 'pr' in flow:
-                    tmp_m.append(flow['pr'])
+                    tmp_m.append(protocols[ str(flow['pr'])])
+                    #tmp_m.append(flow['pr'])
                 else:
                     tmp_m.append(0)
 
                 # add tls specific items
                 if 'tls' in flow and 'scs' in flow['tls']:
-                    tmp_m.append(flow['tls']['scs'])
+                    (cipher_name, tmp_level) = ciphers[str(flow['tls']['scs'])]
+                    tmp_m.append(cipher_name)
+                    #tmp_m.append(flow['tls']['scs'])
                 else:
                     tmp_m.append(-1)
                 if 'tls' in flow and 'tls_client_key_length' in flow['tls']:
@@ -548,11 +665,7 @@ class DataParser:
 
                 data.append(tmp)
                 metadata.append(tmp_m)
-            if 'tls' in flow and 'SNI' in flow['tls']:
-                tmp.append(flow['tls']['SNI'])
-                tmp_m.append(flow['tls']['SNI'])
-                print "flow[tls][SNI]"
-                print flow['tls']['SNI']
+
             if data == []:
                 return None,None
             return data, metadata
