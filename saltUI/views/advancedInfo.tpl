@@ -116,9 +116,23 @@
       <tr>
         <td>Offered Ciphersuite(s):</td>
         <td>
-          % i = 0
+          % i = 1
           %for item in info['OfferedCS']:
               {{i}}. {{item}}</br>
+          %i = i + 1
+          %end
+
+        </td>
+        <td/>
+    </tr>
+    %end
+    % if info['tls_ext'] is not None:
+      <tr>
+        <td>TLS Extension(s):</td>
+        <td>
+          % i = 1
+          %for item in info['tls_ext']:
+              {{i}}. {{item['type']}}</br>
           %i = i + 1
           %end
 

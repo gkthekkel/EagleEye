@@ -185,11 +185,11 @@ flow_data = {}
 def advancedInfo(key):
 
 
-    (sa,da,sp,dp,splt,bd,sni,dns,o_probable_os,i_probable_os,tls_iv,tls_ov,tls_osid,tls_isid,scs,cs,pr,OfferedCS) = flows[key]
-    sOrgName = getOrgName(sa)
-    dOrgName = getOrgName(da)
-    #sOrgName = "hello"
-    #dOrgName = "hello"
+    (sa,da,sp,dp,splt,bd,sni,dns,o_probable_os,i_probable_os,tls_iv,tls_ov,tls_osid,tls_isid,scs,cs,pr,OfferedCS,tls_ext) = flows[key]
+    #sOrgName = getOrgName(sa)
+    #dOrgName = getOrgName(da)
+    sOrgName = "hello"
+    dOrgName = "hello"
 
     print("checkpoint")
     print(flows[key])
@@ -213,6 +213,9 @@ def advancedInfo(key):
     tmp['scs'] = scs
     tmp['pr'] = pr
     tmp['OfferedCS'] = OfferedCS
+    tmp['tls_ext'] = tls_ext
+
+    print tls_ext
 
     lns = []
     times = []
@@ -269,17 +272,6 @@ def advancedInfo(key):
                 new_bd.append(tmp_bd)
                 tmp_bd = []
         tmp['bd'] = new_bd
-
-    '''if dns != None:
-        old_dns = []
-        old_dns.append(dns)
-        tmp['dns'] = old_dns
-    else:
-        old_dns = []
-        old_dns.append("dns")
-        tmp['dns'] = old_dns'''
-
-
     return template('advancedInfo',info=tmp)
 
 @route('/upload')

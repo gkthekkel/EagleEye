@@ -506,6 +506,10 @@ class DataParser:
                 cs = None
                 pr = None
                 OfferedCS= None
+                tls_ext_old = None
+                tls_ext = None
+
+
 
                 if 'o_probable_os' in flow:
                     o_probable_os = flow['o_probable_os']
@@ -554,9 +558,20 @@ class DataParser:
                         try:
                             (cipher_name, tmp_level) = ciphers[str(c)]
                         except:
-                            print "Missing cipher name for in cs: " + str(cs)
+                            print "Missing cipher name for cs: " + str(c)
                         OfferedCS.append(cipher_name)
 
+
+                if 'tls' in flow and 'tls_ext' in flow['tls']:
+                    tls_ext_old = flow['tls']['tls_ext']
+                    tls_ext = []
+                    for x in tls_ext_old:
+                        try:
+                            x['type'] = extensions[str(x['type'])]
+                            tls_ext.append(x)
+                        except Exception as e:
+                            #x['type'] = "Unassigned"
+                            print "Missing extension info for tls_ext: " + str(x['type'])
 
                 """
                 print "SNI"
@@ -584,7 +599,7 @@ class DataParser:
 
 
 
-                self.advancedInfo[key] = (flow['sa'],flow['da'],flow['sp'],flow['dp'],flow['packets'],bd,SNI,dns,o_probable_os,i_probable_os,tls_iv,tls_ov,tls_osid,tls_isid,scs,cs,pr,OfferedCS)
+                self.advancedInfo[key] = (flow['sa'],flow['da'],flow['sp'],flow['dp'],flow['packets'],bd,SNI,dns,o_probable_os,i_probable_os,tls_iv,tls_ov,tls_osid,tls_isid,scs,cs,pr,OfferedCS,tls_ext)
                 self.all_flows[key] = flow
                 tmp_m.append(flow['sa']) # source port
                 tmp_m.append(flow['da']) # destination port
