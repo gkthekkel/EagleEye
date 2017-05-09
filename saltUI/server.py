@@ -34,7 +34,7 @@
  *
 '''
 
-from bottle import route, view, run, request, response, template
+from bottle import route, view, run, request, response, template, static_file
 from data_parser import *
 from collections import OrderedDict
 import cPickle as pickle
@@ -71,13 +71,7 @@ try:
 except:
     out_dir = '/usr/local/var/joy/'
 
-# read in ciphersutie information
-fp = open('ciphersuites.txt','r')
-ciphers = {}
-for line in fp:
-    tok = line.split()
-    ciphers[tok[0]] = (tok[1],tok[2])
-fp.close()
+
 
 openssl = {}
 # read in openssl information
@@ -144,6 +138,7 @@ def contact():
 def admin():
     return template('admin',flags=None)
 
+
 @route('/update_malware')
 @view('admin')
 def update_malware():
@@ -189,10 +184,16 @@ flow_data = {}
 @route('/advancedInfo/<key>')
 @view('advancedInfo')
 def advancedInfo(key):
-    (sa,da,sp,dp,splt,bd,tls) = flows[key]
-    sOrgName = getOrgName(sa)
-    dOrgName = getOrgName(da)
 
+
+    (sa,da,sp,dp,splt,bd,sni,dns,o_probable_os,i_probable_os,tls_iv,tls_ov,tls_osid,tls_isid,scs,cs,pr,OfferedCS,tls_ext) = flows[key]
+    #sOrgName = getOrgName(sa)
+    #dOrgName = getOrgName(da)
+    sOrgName = "hello"
+    dOrgName = "hello"
+
+    print("checkpoint")
+    print(flows[key])
 
     tmp = {}
     tmp['sOrgName'] = sOrgName
@@ -201,15 +202,21 @@ def advancedInfo(key):
     tmp['da'] = da
     tmp['sp'] = sp
     tmp['dp'] = dp
-    print tls
-    print sa
-    if('SNI' in tls):
-        print tls['SNI'][0]
-        tmp['SNI'] = tls['SNI'][0]
-    else:
-        tmp['SNI'] = '-'
-    tmp['tls'] = tls
+    tmp['dns'] = dns
+    tmp['SNI'] = sni
 
+    tmp['o_probable_os'] = o_probable_os
+    tmp['i_probable_os'] = i_probable_os
+    tmp['tls_iv'] = tls_iv
+    tmp['tls_ov'] = tls_ov
+    tmp['tls_osid'] = tls_osid
+    tmp['tls_isid'] = tls_isid
+    tmp['scs'] = scs
+    tmp['pr'] = pr
+    tmp['OfferedCS'] = OfferedCS
+    tmp['tls_ext'] = tls_ext
+
+    print tls_ext
 
     lns = []
     times = []
@@ -266,7 +273,6 @@ def advancedInfo(key):
                 new_bd.append(tmp_bd)
                 tmp_bd = []
         tmp['bd'] = new_bd
-
     return template('advancedInfo',info=tmp)
 
 @route('/upload')
@@ -303,7 +309,7 @@ def classify_samples(data, metadata):
                 w = x[2]
                 b_bd = x[3]
                 w_bd = x[4]
-                #print d
+
                 if len(d) == len(w) or (d[4]+d[5] < 100):
                     tmp = np.dot(d[0:207],w)
                     tmp += b
@@ -433,7 +439,6 @@ def results():
     for f in file_names:
 
 #        try: # just a robustness check
-        print ("George1")
         parser = DataParser(f)
         tmpBD = parser.getByteDistribution()
         tmpIPT = parser.getIndividualFlowIPTs()
@@ -1000,6 +1005,11 @@ def windows():
     results.sort()
     results.reverse()
     return template('windows',results=results)
+
+
+@route('/<filename:re:.*\.svg>')
+def serve_pictures(filename):
+    return static_file(filename, root='./')
 
 run(host='localhost', port=8080, debug=True)
 #run(host='192.168.0.96', port=80, debug=True)

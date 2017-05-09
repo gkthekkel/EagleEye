@@ -1,24 +1,24 @@
 <!--
- *	
+ *
  * Copyright (c) 2016 Cisco Systems, Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  *   Redistributions of source code must retain the above copyright
  *   notice, this list of conditions and the following disclaimer.
- * 
+ *
  *   Redistributions in binary form must reproduce the above
  *   copyright notice, this list of conditions and the following
  *   disclaimer in the documentation and/or other materials provided
  *   with the distribution.
- * 
+ *
  *   Neither the name of the Cisco Systems, Inc. nor the names of its
  *   contributors may be used to endorse or promote products derived
  *   from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -40,9 +40,9 @@
 <head>
   <meta charset="utf-8">
 
-  <title>LAUI 0.2a</title>
-  <meta name="description" content="LAUI 0.2a">
-  <meta name="author" content="Blake Anderson">
+  <title>EagleEye o.o</title>
+  <meta name="description" content="EagleEye">
+  <meta name="author" content="Umbrella India">
 
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -74,7 +74,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/home">LAUI 0.2a</a>
+        <a class="navbar-brand" href="/home">Eagle Eye</a>
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
@@ -82,13 +82,15 @@
           <li id="navbar_contact"><a href="/contact">Contact</a></li>
           <li id="navbar_admin"><a href="/admin">Admin</a></li>
           <li id="navbar_dropdown" class="dropdown">
-            <a href="#" class="dropdown-toggle" onclick="document.getElementById('navbar_home').className = '';document.getElementById('navbar_contact').className = '';document.getElementById('navbar_admin').className = '';" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Local Analytics<span class="caret"></span></a>
+            <a href="#" class="dropdown-toggle" onclick="document.getElementById('navbar_home').className = '';document.getElementById('navbar_contact').className = '';document.getElementById('navbar_admin').className = '';" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Eagle Eye<span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li><a href="/results">View Recent Results</a></li>
               <li><a href="/upload">Upload JSON File</a></li>
               <li><a href="#">View High Threat Flows</a></li>
             </ul>
           </li>
+
+          <a id="logo" href="/"><img src="/static/Cisco-Umbrella-Logo.svg" height="50" align="right" width="267"></a>
         </ul>
       </div><!--/.nav-collapse -->
     </div>

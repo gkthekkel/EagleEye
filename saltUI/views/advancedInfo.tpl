@@ -67,15 +67,94 @@
         <td>{{info['da']}} ({{info['dp']}})</td>
 	<td>{{info['dOrgName']}}</td>
       </tr>
+
+    % if info['SNI'] is not None:
       <tr>
-        <td>SNI:</td>
-        <td>{{info['SNI']}}</td>
+        <td>SNI:</td><td>{{info['SNI']}}</td><td/>
 	  </tr>
+    %end
+
+    % if info['o_probable_os'] is not None:
+      <tr>
+        <td>Outbound OS:</td><td>{{info['o_probable_os']}}</td><td/>
+      </tr>
+    %end
+    % if info['i_probable_os'] is not None:
+      <tr>
+        <td>Inbound OS:</td><td>{{info['i_probable_os']}}</td><td/>
+    </tr>
+    %end
+
+    % if info['tls_iv'] is not None:
+      <tr>
+        <td>TLS Inbound Version:</td><td>{{info['tls_iv']}}</td><td/>
+    </tr>
+    %end
+    % if info['tls_ov'] is not None:
+      <tr>
+        <td>TLS Outbound Version:</td><td>{{info['tls_ov']}}</td><td/>
+    </tr>
+    %end
+
+    % if info['tls_isid'] is not None:
+      <tr>
+        <td>TLS Inbound Session:</td><td>{{info['tls_isid']}}</td><td/>
+    </tr>
+    %end
+    % if info['tls_osid'] is not None:
+      <tr>
+        <td>TLS Outbound Session:</td><td>{{info['tls_osid']}}</td><td/>
+    </tr>
+    %end
+
+    % if info['scs'] is not None:
+      <tr>
+        <td>Selected Ciphersuite:</td><td>{{info['scs']}}</td><td/>
+    </tr>
+    %end
+    % if info['OfferedCS'] is not None:
+      <tr>
+        <td>Offered Ciphersuite(s):</td>
+        <td>
+          % i = 1
+          %for item in info['OfferedCS']:
+              {{i}}. {{item}}</br>
+          %i = i + 1
+          %end
+
+        </td>
+        <td/>
+    </tr>
+    %end
+    % if info['tls_ext'] is not None:
+      <tr>
+        <td>TLS Extension(s):</td>
+        <td>
+          % i = 1
+          %for item in info['tls_ext']:
+              {{i}}. {{item['type']}}</br>
+          %i = i + 1
+          %end
+
+        </td>
+        <td/>
+    </tr>
+    %end
+
+
+
+    % if info['dns'] is not None:
+    <tr>
+        <td>DNS:</td><td>{{info['dns']}}</td><td/>
+    </tr>
+    %end
+
       <tr>
         <td>Length of Connection:</td>
 	<td>{{info['total_time']}}ms</td>
 	<td/>
       </tr>
+
       <tr>
         <td/><td/><td/>
       </tr>
